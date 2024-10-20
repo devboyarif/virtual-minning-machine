@@ -19,6 +19,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', [UserRole::getValues()])->default(UserRole::User);
+            $table->unsignedBigInteger('vmm_coins')->default(0);
+            $table->float('balance')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
