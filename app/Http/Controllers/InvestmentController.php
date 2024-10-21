@@ -25,14 +25,19 @@ class InvestmentController extends Controller
             $balance = auth()->user()->balance;
             $vmm = VMM::findOrFail($request->vmm_id);
 
-            // Check if the investment amount is greater than the minimum investment amount
+            // check if the minimum investment amount is less than the investment amount
             if ($vmm->minimum_invest > $request->amount) {
                 return redirect()->back()->with('error', 'Minimum investment amount is '.$vmm->minimum_invest);
             }
 
-            // Check if the investment amount is less than the maximum investment amount
+            // check if the maximum investment amount is greater than the investment amount
             if ($balance < $request->amount) {
                 return redirect()->back()->with('error', 'Insufficient balance');
+            }
+
+            // check if the vmm active or not
+            if ($vmm->type !== 'active') {
+                return redirect()->back()->with('error', "You can't invest now");
             }
 
             DB::beginTransaction();
@@ -52,12 +57,12 @@ class InvestmentController extends Controller
                 ]);
             }
 
-            // Deduct the investment amount from the user's balance
+            // deduct the investment amount from the user's balance
             auth()->user()->update([
                 'balance' => $balance - $request->amount,
             ]);
 
-            // Create a transaction
+            // create a transaction
             Transaction::create([
                 'user_id' => auth()->id(),
                 'vmm_id' => $vmm->id,

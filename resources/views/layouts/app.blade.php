@@ -29,6 +29,8 @@
 
             <!-- Page Content -->
             <main>
+                <x-notification />
+
                 {{ $slot }}
             </main>
         </div>

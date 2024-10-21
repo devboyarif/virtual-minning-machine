@@ -6,6 +6,7 @@ use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\VMMController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -27,6 +28,13 @@ Route::middleware('auth', 'check.admin')->group(function () {
     Route::get('/withdraw/request', [WithdrawController::class, 'withdrawRequest'])->name('withdraw.request');
     Route::post('/withdraw/approve/{transaction}', [WithdrawController::class, 'withdrawApprove'])->name('withdraw.approve');
     Route::post('/withdraw/reject/{transaction}', [WithdrawController::class, 'withdrawReject'])->name('withdraw.reject');
+
+    Route::controller(VMMController::class)->group(function(){
+        Route::put('/vmm/status/{vmm}', 'changeStatus')->name('vmm.status');
+        Route::get('/vmm/create', 'create')->name('vmm.create');
+        Route::post('/vmm/create', 'store')->name('vmm.store');
+    });
+
 });
 
 // =================== Profile routes =======================

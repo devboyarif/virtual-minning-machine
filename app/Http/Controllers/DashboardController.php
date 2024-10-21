@@ -15,7 +15,12 @@ class DashboardController extends Controller
         $data = [];
         if($role->value == 'user'){
             $data['vmms'] = VMM::where('type', '!=', VMMStatus::Draft)
+                                    ->where('type', '!=', VMMStatus::Finished)
                                     ->with('investment')
+                                    ->latest()
+                                    ->get();
+        }else {
+            $data['vmms'] = VMM::with('investment')
                                     ->latest()
                                     ->get();
         }

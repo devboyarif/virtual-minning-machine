@@ -7,20 +7,6 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @session('success')
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong class="font-bold">Success!</strong>
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endsession
-
-            @session('error')
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong class="font-bold">Error!</strong>
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endsession
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="d-flex text-gray-900">
                     {{-- Investment Modal --}}
@@ -28,7 +14,7 @@
                         <div class="relative p-4 w-full max-w-2xl max-h-full">
                             <form action="{{ route('invest.now') }}" method="POST">
                                 @csrf
-                                <input type="text" name="vmm_id" id="vmm_id">
+                                <input type="hidden" name="vmm_id" id="vmm_id">
                                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Invest to VMM</h3>
@@ -47,7 +33,6 @@
                                     </div>
                                     <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                                         <button id="acceptModal" type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-                                        <button id="closeModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Close</button>
                                     </div>
                                 </div>
                             </form>
@@ -61,7 +46,7 @@
                                 <h2 class="text-center text-xl font-bold mb-4">
                                     {{ $vmm->title }}
                                 </h2>
-                                <div class="text-center">
+                                <div class="text-center mb-5">
                                     @if ($vmm->type === 'active')
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Active
@@ -80,8 +65,6 @@
                                         </span>
                                     @endif
                                 </div>
-                                {{-- <p class="text-center text-lg font-semibold text-gray-800 mb-4">Winning Amount 1000$</p> --}}
-
                                 <ul class="text-sm text-gray-600 space-y-2">
                                     <li class="flex items-center">
                                         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
@@ -109,15 +92,14 @@
                                     </li>
                                 </ul>
 
-                                <div class="flex justify-center mt-6">
-                                    {{-- <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg openInvestmentModal" type="button">
-                                        Invest Now
-                                    </button> --}}
-                                    <button class="invest-btn bg-blue-500 text-white font-semibold py-2 px-4 rounded mt-4" type="button"
-                                        data-vmmid="{{ $vmm->id }}">
-                                        Invest Now
-                                    </button>
-                                </div>
+                                @if ($vmm->type === 'active')
+                                    <div class="flex justify-center mt-6">
+                                        <button class="invest-btn bg-blue-500 text-white font-semibold py-2 px-4 rounded mt-4" type="button"
+                                            data-vmmid="{{ $vmm->id }}">
+                                            Invest Now
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
