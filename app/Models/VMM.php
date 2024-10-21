@@ -2,14 +2,22 @@
 
 namespace App\Models;
 
+use App\Enums\VMMStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class VMM extends Model
 {
     protected $guarded = [];
 
-    public function investment()
+    protected function casts(): array
     {
-        return $this->hasOne(Investment::class, 'vmm_id');
+        return [
+            'status' => VMMStatus::class,
+        ];
+    }
+
+    public function investments()
+    {
+        return $this->hasMany(Investment::class, 'vmm_id');
     }
 }

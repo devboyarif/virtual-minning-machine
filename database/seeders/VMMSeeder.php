@@ -16,6 +16,18 @@ class VMMSeeder extends Seeder
     {
         VMM::insert([
             [
+                'title' => 'VMM zero',
+                'lifetime' => 5,
+                'minimum_invest' => 10,
+                'distribute_coin' => 50,
+                'execution_time' => 10,
+                'preparation_time' => 1,
+                'start_time' => now()->addDays(1),
+                'type' => VMMStatus::Draft,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'title' => 'VMM 1',
                 'lifetime' => 120,
                 'minimum_invest' => 200,
@@ -47,7 +59,7 @@ class VMMSeeder extends Seeder
                 'execution_time' => 90,
                 'preparation_time' => 40,
                 'start_time' => now()->addDays(3),
-                'type' => VMMStatus::Running,
+                'type' => VMMStatus::Draft,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

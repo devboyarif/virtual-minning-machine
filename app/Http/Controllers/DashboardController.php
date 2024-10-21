@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\VMMStatus;
 use App\Models\VMM;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -15,14 +14,23 @@ class DashboardController extends Controller
         $data = [];
         if($role->value == 'user'){
             $data['vmms'] = VMM::where('type', '!=', VMMStatus::Draft)
-                                    ->where('type', '!=', VMMStatus::Finished)
-                                    ->with('investment')
-                                    ->latest()
-                                    ->get();
+                                ->where('type', '!=', VMMStatus::Finished)
+                                ->with('investments')
+                                ->latest()
+                                ->get()
+                                ->map(function($vmm){
+                                    $investment = $vmm->investments->where('user_id', auth()->id())->first();
+
+                                    if($investment){
+                                        $vmm->my_investment = $investment->amount;
+                                    }else{
+                                        $vmm->my_investment = 0;
+                                    }
+
+                                    return $vmm;
+                                });
         }else {
-            $data['vmms'] = VMM::with('investment')
-                                    ->latest()
-                                    ->get();
+            $data['vmms'] = VMM::latest()->get();
         }
 
         return view($view, $data);

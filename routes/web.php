@@ -34,7 +34,6 @@ Route::middleware('auth', 'check.admin')->group(function () {
         Route::get('/vmm/create', 'create')->name('vmm.create');
         Route::post('/vmm/create', 'store')->name('vmm.store');
     });
-
 });
 
 // =================== Profile routes =======================

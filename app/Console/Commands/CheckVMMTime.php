@@ -28,9 +28,11 @@ class CheckVMMTime extends Command
      */
     public function handle()
     {
-        $vmm = VMM::where('start_time', '<=', now())
+        $vmm = VMM::where('start_time', '>=', now())
                 ->where('type', 'active')
                 ->first();
+
+        info('vmm from scheduler');
 
         if ($vmm) {
             // change status to in preparation

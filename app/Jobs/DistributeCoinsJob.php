@@ -2,11 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Enums\TransactionStatus;
-use App\Enums\TransactionType;
 use App\Models\VMM;
+use App\Models\User;
 use App\Models\Investment;
 use App\Models\Transaction;
+use App\Enums\TransactionType;
+use App\Enums\TransactionStatus;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -23,6 +24,8 @@ class DistributeCoinsJob implements ShouldQueue
 
     public function handle()
     {
+        info('vmm from distributeCoinsJob');
+
         $vmm = VMM::find($this->vmmId);
 
         if ($vmm && $vmm->type === 'running') {
@@ -31,13 +34,15 @@ class DistributeCoinsJob implements ShouldQueue
             if ($winner) {
                 $coinAmount = $this->calculateCoinDistribution($vmm);
 
-                $this->createTransaction($winner['user_id'], $coinAmount);
+                $this->createTransaction($winner['user_id'], $coinAmount, $vmm->id);
             }
         }
     }
 
     protected function selectWinner($vmm)
     {
+        info('vmm from selectWinner');
+
         $participants = Investment::where('vmm_id', $vmm->id)->get();
 
         $totalInvestment = $participants->sum('amount');
@@ -53,17 +58,21 @@ class DistributeCoinsJob implements ShouldQueue
 
         $winner = $this->getWeightedRandomWinner($weightedParticipants);
 
+        info('Winner is user id' . $winner['user_id']);
+
         return $winner;
     }
 
     protected function getWeightedRandomWinner($participants)
     {
+        info('vmm from getWeightedRandomWinner');
+
         $random = mt_rand(0, 10000) / 10000;
-        $cumulativeWeight = 0;
+        $vmm_weight = 0;
 
         foreach ($participants as $participant) {
-            $cumulativeWeight += $participant['weight'];
-            if ($random <= $cumulativeWeight) {
+            $vmm_weight += $participant['weight'];
+            if ($random <= $vmm_weight) {
                 return $participant;
             }
         }
@@ -73,6 +82,8 @@ class DistributeCoinsJob implements ShouldQueue
 
     protected function calculateCoinDistribution($vmm)
     {
+        info('vmm from calculateCoinDistribution');
+
         $totalCoins = $vmm->distribute_coin;
         $executionRounds = $vmm->lifetime * 60 / $vmm->execution_time;
 
@@ -81,13 +92,21 @@ class DistributeCoinsJob implements ShouldQueue
         return $coinsPerRound;
     }
 
-    protected function createTransaction($userId, $coins)
+    protected function createTransaction($userId, $coins, $vmmId)
     {
+        info('vmm from createTransaction and increment coins');
+
+        // create transaction
         Transaction::create([
             'user_id' => $userId,
+            'vmm_id' => $vmmId,
             'amount' => $coins,
             'type' => TransactionType::Winning,
-            'status' => TransactionStatus::Approved,
+            'status' => TransactionStatus::Approved
         ]);
+
+        // increment user's coins
+        $user = User::find($userId);
+        $user->increment('vmm_coins', $coins);
     }
 }

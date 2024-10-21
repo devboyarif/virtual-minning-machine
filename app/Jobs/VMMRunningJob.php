@@ -19,6 +19,8 @@ class VMMRunningJob implements ShouldQueue
 
     public function handle()
     {
+        info('vmm from vmmrunningjob');
+
         $vmm = VMM::find($this->vmmId);
 
         if ($vmm && $vmm->type === 'in_preparation') {
@@ -33,19 +35,25 @@ class VMMRunningJob implements ShouldQueue
 
     protected function scheduleCoinDistribution($vmm)
     {
+        info('vmm from scheduleCoinDistribution');
+
         $executionTimeInSeconds = $vmm->execution_time;
         $lifetimeInSeconds = $vmm->lifetime * 60;
+        $totalDelay = 0;
 
-        // distribute coins every execution_time interval
         while ($lifetimeInSeconds > 0) {
-            dispatch(new DistributeCoinsJob($vmm->id))->delay(now()->addSeconds($executionTimeInSeconds));
+            dispatch(new DistributeCoinsJob($vmm->id))->delay(now()->addSeconds($totalDelay));
 
-            // decrease the lifetime by the execution time
+            $totalDelay += $executionTimeInSeconds;
             $lifetimeInSeconds -= $executionTimeInSeconds;
         }
 
-        // mark the VMM as finished after the lifetime
-        $vmm->type = 'finished';
-        $vmm->save();
+        dispatch(function () use ($vmm) {
+            info('vmm finished');
+
+            $vmm->type = 'finished';
+            $vmm->save();
+        })->delay(now()->addSeconds($totalDelay));
     }
+
 }

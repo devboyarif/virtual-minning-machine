@@ -24,33 +24,33 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $transaction->vmm->title ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @if ($transaction->type === 'investment')
+                                        @if ($transaction->type->value === 'investment')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 Investment
                                             </span>
-                                        @elseif ($transaction->type === 'winning')
+                                        @elseif ($transaction->type->value === 'winning')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 Winning
                                             </span>
-                                        @elseif ($transaction->type === 'withdrawal')
+                                        @elseif ($transaction->type->value === 'withdrawal')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                 Withdrawal
                                             </span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $transaction->amount }} {{ $transaction->type == 'withdrawal' ? 'Coins' : '৳' }}
+                                        {{ $transaction->amount }} {{ $transaction->type->value == 'withdrawal' || $transaction->type->value == 'winning' ? 'Coins' : '৳' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @if ($transaction->status === 'rejected')
+                                        @if ($transaction->status->value === 'rejected')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                 Rejected
                                             </span>
-                                        @elseif ($transaction->status === 'approved')
+                                        @elseif ($transaction->status->value === 'approved')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 Success
                                             </span>
-                                        @elseif ($transaction->status === 'pending')
+                                        @elseif ($transaction->status->value === 'pending')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                 Pending
                                             </span>
